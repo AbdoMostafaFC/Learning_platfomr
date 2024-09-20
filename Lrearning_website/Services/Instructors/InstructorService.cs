@@ -28,13 +28,18 @@ namespace ApiFinalProject.Services.Instructors
         {
             return context.Instructors.ToList();
         }
-        public Instructor GetbyID(int id)
+        public Instructor? GetbyID(int? id)
         {
             return context.Instructors.FirstOrDefault(d => d.Id == id);
         }
         public void Save()
         {
             context.SaveChanges();
+        }
+
+        public Instructor GetbyID(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

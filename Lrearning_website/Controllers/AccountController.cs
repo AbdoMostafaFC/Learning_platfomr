@@ -2,6 +2,7 @@
 using ApiFinalProject.DTO.AuthDTO;
 using ApiFinalProject.Entities;
 using ApiFinalProject.persistence;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.IO;
+
 
 namespace ApiFinalProject.Controllers
 {
@@ -22,23 +25,63 @@ namespace ApiFinalProject.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
 
         public AccountController(UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager, ApplicationDbContext context,SignInManager<ApplicationUser>signInManager,IConfiguration configuration)
+            RoleManager<IdentityRole> roleManager, ApplicationDbContext context,SignInManager<ApplicationUser>signInManager
+            ,IConfiguration configuration,IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
             this._signInManager = signInManager;
             _configuration = configuration;
+            _webHostEnvironment = webHostEnvironment;
+            //_webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Register([FromForm] RegisterModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, PhoneNumber = model.PhoneNumber };
+               
 
+                // Define folder based on role
+                string imageUrl=default!;
+
+                if (model.image != null)
+                {
+                string folderName = model.Role == "Teacher" ? "teacher-images" : "student-images";
+
+                    if (string.IsNullOrEmpty(_webHostEnvironment.WebRootPath))
+                    {
+                        return BadRequest("Web root path is not configured.");
+                    }
+
+                    if (string.IsNullOrEmpty(folderName))
+                    {
+                        return BadRequest("Invalid role specified.");
+                    }
+
+                    var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath,folderName);
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder); // Create folder if not exists
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.image.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.image.CopyToAsync(fileStream);
+                    }
+
+                    imageUrl = "/" + folderName + "/" + uniqueFileName; // Set the relative image URL
+                }
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, PhoneNumber = model.PhoneNumber };
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
@@ -61,12 +104,16 @@ namespace ApiFinalProject.Controllers
                         {
                             return BadRequest("Invalid Specialization ID.");
                         }
-
+                        if (!model.experienceAge.HasValue)
+                        {
+                            return BadRequest("Experience age is required for teachers.");
+                        }
                         var teacher = new Instructor
                         {
                             ExperienceAge=model.experienceAge,
                             ApplicationUserId = user.Id,
                             Name = model.Name,
+                            ImageUrl=imageUrl,
                             SpecializationId = model.SpecializationId
                         };
 
@@ -78,6 +125,7 @@ namespace ApiFinalProject.Controllers
                         {
                             ApplicationUserId = user.Id,
                             Name = model.Name,
+                            ImageUrl = imageUrl
                             
                         };
 

@@ -28,13 +28,18 @@ namespace ApiFinalProject.Services.Specalazation
         {
             return context.Specializations.ToList();
         }
-        public Specialization GetbyID(int id)
+        public Specialization? GetbyID(int? id)
         {
             return context.Specializations.FirstOrDefault(d => d.Id == id);
         }
         public void Save()
         {
             context.SaveChanges();
+        }
+
+        public Specialization GetbyID(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

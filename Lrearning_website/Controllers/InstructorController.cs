@@ -46,10 +46,11 @@ namespace ApiFinalProject.Controllers
             return Ok(specializationDTOs);
         }
         [HttpGet("{id:int}")]
-        public IActionResult GetInstuctorById(int id) {
-        
+        public IActionResult GetInstuctorById(int id)
+        {
+
             Instructor ins = iinstructor.GetbyID(id);
-            Specialization specialization =ispecalazation.GetbyID(ins.SpecializationId);
+            Specialization specialization = ispecalazation.GetbyID(5);
             InstructorInformation instructorDTO = new InstructorInformation
             {
                 Id = ins.Id,
@@ -57,12 +58,12 @@ namespace ApiFinalProject.Controllers
                 ImageUrl = ins.ImageUrl,
                 Address = ins.Address,
                 ExperienceAge = ins.ExperienceAge,
-                SpecializationName =specialization.Name
-                
+                SpecializationName = specialization.Name
+
             };
             return Ok(instructorDTO);
 
-        
+
         }
 
         [HttpGet("Top5")]

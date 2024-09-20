@@ -4,6 +4,7 @@ using ApiFinalProject.persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lrearning_website.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240920084635_add-image")]
+    partial class addimage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +45,7 @@ namespace Lrearning_website.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.Chapter", b =>
@@ -68,7 +71,7 @@ namespace Lrearning_website.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Chapters", (string)null);
+                    b.ToTable("Chapters");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.Course", b =>
@@ -109,7 +112,7 @@ namespace Lrearning_website.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.CourseInstructor", b =>
@@ -124,7 +127,7 @@ namespace Lrearning_website.Migrations
 
                     b.HasIndex("InstructorId");
 
-                    b.ToTable("CourseInstructors", (string)null);
+                    b.ToTable("CourseInstructors");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.CourseStudent", b =>
@@ -142,7 +145,7 @@ namespace Lrearning_website.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("CourseStudents", (string)null);
+                    b.ToTable("CourseStudents");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.Instructor", b =>
@@ -183,7 +186,7 @@ namespace Lrearning_website.Migrations
 
                     b.HasIndex("SpecializationId");
 
-                    b.ToTable("Instructors", (string)null);
+                    b.ToTable("Instructors");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.Review", b =>
@@ -218,7 +221,7 @@ namespace Lrearning_website.Migrations
                     b.HasIndex("CourseId", "StudentId")
                         .IsUnique();
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.Specialization", b =>
@@ -236,7 +239,7 @@ namespace Lrearning_website.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specializations", (string)null);
+                    b.ToTable("Specializations");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.Student", b =>
@@ -265,7 +268,7 @@ namespace Lrearning_website.Migrations
                     b.HasIndex("ApplicationUserId")
                         .IsUnique();
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("ApiFinalProject.Entities.Video", b =>
@@ -297,7 +300,7 @@ namespace Lrearning_website.Migrations
 
                     b.HasIndex("ChapterID");
 
-                    b.ToTable("Videos", (string)null);
+                    b.ToTable("Videos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
